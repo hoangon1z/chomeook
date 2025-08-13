@@ -46,19 +46,27 @@ const nextConfig = {
   // Compression
   compress: true,
 
-  // Bundle analyzer (uncomment to analyze bundle size)
-  // webpack: (config, { isServer }) => {
-  //   if (!isServer) {
-  //     const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-  //     config.plugins.push(
-  //       new BundleAnalyzerPlugin({
-  //         analyzerMode: 'static',
-  //         openAnalyzer: false,
-  //       })
-  //     )
-  //   }
-  //   return config
-  // },
+  // Webpack configuration to exclude specific files from build
+  webpack: (config, { isServer }) => {
+    // Exclude analytics route from build
+    config.module.rules.push({
+      test: /app\/api\/admin\/analytics\/route\.ts$/,
+      use: 'ignore-loader'
+    })
+
+    // Bundle analyzer (uncomment to analyze bundle size)
+    // if (!isServer) {
+    //   const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+    //   config.plugins.push(
+    //     new BundleAnalyzerPlugin({
+    //       analyzerMode: 'static',
+    //       openAnalyzer: false,
+    //     })
+    //   )
+    // }
+    
+    return config
+  },
 
   // Redirects for SEO
   async redirects() {
