@@ -3,22 +3,6 @@ import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // Check if user is trying to access admin routes
-    if (req.nextUrl.pathname.startsWith("/admin")) {
-      // Check if user has admin role
-      if (req.nextauth.token?.role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/auth/signin", req.url))
-      }
-    }
-
-    // Check if user is trying to access API admin routes
-    if (req.nextUrl.pathname.startsWith("/api/admin")) {
-      // Check if user has admin role
-      if (req.nextauth.token?.role !== "ADMIN") {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-      }
-    }
-
     return NextResponse.next()
   },
   {
@@ -47,8 +31,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/api/admin/:path*",
     "/profile/:path*"
   ]
 }

@@ -16,7 +16,7 @@ model User {
   email         String    @unique
   firstName     String?
   lastName      String?
-  password      String?   // For admin users
+  password      String?
   role          UserRole  @default(DONOR)
   country       String?
   zipCode       String?
@@ -305,7 +305,6 @@ model Statistics {
 
 // Enums
 enum UserRole {
-  ADMIN
   MODERATOR
   DONOR
   VOLUNTEER

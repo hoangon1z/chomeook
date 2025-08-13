@@ -8,7 +8,7 @@ Hướng dẫn setup database PostgreSQL bằng Docker cho dự án Save Paws.
 # 1. Copy file environment
 cp .env.example .env.local
 
-# 2. Chạy setup tự động (khởi động Docker + tạo database + tạo admin)
+# 2. Chạy setup tự động (khởi động Docker + tạo database)
 npm run setup
 ```
 

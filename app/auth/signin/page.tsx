@@ -34,13 +34,7 @@ export default function SignInPage() {
       if (result?.error) {
         setError("Invalid email or password")
       } else {
-        // Check user role and redirect accordingly
-        const session = await getSession()
-        if (session?.user?.role === "ADMIN") {
-          router.push("/admin")
-        } else {
-          router.push("/")
-        }
+        router.push("/")
       }
     } catch (error) {
       setError("An error occurred. Please try again.")
@@ -59,14 +53,14 @@ export default function SignInPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-green-600 rounded-2xl mb-4 shadow-lg">
             <Heart className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Sign In</h1>
-          <p className="text-gray-600 mt-2">Access restricted to administrators only</p>
+          <h1 className="text-2xl font-bold text-gray-900">Sign In</h1>
+          <p className="text-gray-600 mt-2">Welcome back to Save Paws</p>
         </div>
 
         <Card className="border-0 shadow-xl">
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-            <CardDescription className="text-center">Admins only</CardDescription>
+            <CardDescription className="text-center">Enter your credentials to continue</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {error && (

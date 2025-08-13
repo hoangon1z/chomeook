@@ -35,12 +35,11 @@ const handler = NextAuth({
           return null
         }
 
-        const mappedRole = user.role === 'ADMIN' ? 'ADMIN' : 'USER'
         return {
           id: user.id,
           email: user.email,
           name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email,
-          role: mappedRole,
+          role: 'USER',
         } as any
       }
     })
@@ -63,10 +62,6 @@ const handler = NextAuth({
       return session
     },
     async signIn({ user, account }) {
-      // Only allow ADMIN users to sign in
-      if ((user as any)?.role !== "ADMIN") {
-        return false
-      }
       return true
     },
   },

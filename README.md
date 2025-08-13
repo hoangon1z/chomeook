@@ -14,7 +14,7 @@ A comprehensive, secure, and modern donation platform for animal rescue organiza
 
 - **🗄️ Complete Database System**
   - PostgreSQL with Prisma ORM
-  - User management with roles (ADMIN, DONOR, VOLUNTEER)
+  - User management with roles (DONOR, VOLUNTEER)
   - Donation tracking and analytics
   - Newsletter subscriptions
   - Rescue stories management
@@ -25,12 +25,7 @@ A comprehensive, secure, and modern donation platform for animal rescue organiza
   - Role-based access control
   - Secure password hashing
 
-- **📊 Admin Dashboard**
-  - Real-time donation analytics
-  - User management
-  - Payment method statistics
-  - Recent activity tracking
-  - Donation management
+
 
 - **📧 Email System**
   - Automated donation confirmations
@@ -114,8 +109,7 @@ A comprehensive, secure, and modern donation platform for animal rescue organiza
    # Push database schema
    npm run db:push
    
-   # Create admin user
-   npm run create-admin
+
    ```
 
 5. **Start Development Server**
@@ -129,11 +123,9 @@ A comprehensive, secure, and modern donation platform for animal rescue organiza
 
 ```
 ├── app/                    # Next.js 14 App Router
-│   ├── admin/             # Admin dashboard
 │   ├── api/               # API routes
 │   │   ├── auth/          # Authentication endpoints
 │   │   ├── donations/     # Payment processing
-│   │   └── admin/         # Admin API endpoints
 │   ├── auth/              # Authentication pages
 │   ├── donate/            # Donation page
 │   └── ...                # Other pages
@@ -164,7 +156,6 @@ npm run db:migrate      # Run database migrations
 npm run db:studio       # Open Prisma Studio
 
 # Utilities
-npm run create-admin    # Create admin user
 npm run lint           # Run ESLint
 ```
 
@@ -177,15 +168,7 @@ npm run lint           # Run ESLint
 - **Input Validation**: Comprehensive input sanitization
 - **HTTPS**: SSL/TLS encryption in production
 
-## 📊 Admin Features
 
-Access the admin dashboard at `/admin` with admin credentials:
-
-- **Dashboard Analytics**: Real-time donation statistics
-- **Donation Management**: View and manage all donations
-- **User Management**: Manage user accounts and roles
-- **Payment Analytics**: Track payment methods and trends
-- **Email Management**: Monitor email delivery status
 
 ## 🎨 Customization
 

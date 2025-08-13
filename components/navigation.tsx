@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, Menu, X, Globe, User, Settings, LogOut, Shield } from "lucide-react"
+import { Heart, Menu, X, Globe, User, Settings, LogOut } from "lucide-react"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -74,15 +74,6 @@ export function Navigation() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  {session.user?.role === "ADMIN" && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin/dashboard" className="cursor-pointer">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer"
                     onSelect={(event) => {
@@ -125,15 +116,6 @@ export function Navigation() {
               </Button>
               {session && (
                 <>
-                  {session.user?.role === "ADMIN" && (
-                    <Link
-                      href="/admin/dashboard"
-                      className="text-gray-700 font-medium"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
                   <button
                     className="text-red-600 text-left"
                     onClick={() => {
