@@ -1,0 +1,349 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and donor management
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  firstName     String?
+  lastName      String?
+  password      String?   // For admin users
+  role          UserRole  @default(DONOR)
+  country       String?
+  zipCode       String?
+  phone         String?
+  isActive      Boolean   @default(true)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  donations     Donation[]
+  sessions      Session[]
+  accounts      Account[]
+  rescueStories RescueStory[]
+  mediaUploads  Media[]
+  pages         Page[]
+  posts         Post[]
+
+  @@map("users")
+}
+
+// Account model for OAuth providers
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// Session model for authentication
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Donation model - core of the system
+model Donation {
+  id                String        @id @default(cuid())
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String        @default("USD")
+  donationType      DonationType  @default(ONE_TIME)
+  status            DonationStatus @default(PENDING)
+  paymentMethod     PaymentMethod
+
+  // Payment provider specific IDs
+  stripePaymentIntentId String?
+  stripeCustomerId      String?
+  paypalOrderId         String?
+  paypalPayerId         String?
+
+  // Donor information (encrypted for security)
+  donorEmail        String
+  donorFirstName    String?
+  donorLastName     String?
+  donorCountry      String?
+  donorZipCode      String?
+  donorMessage      String?
+
+  // Metadata
+  metadata          Json?
+  receiptSent       Boolean   @default(false)
+  receiptSentAt     DateTime?
+
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  completedAt       DateTime?
+
+  // Relations
+  userId            String?
+  user              User?     @relation(fields: [userId], references: [id])
+
+  @@map("donations")
+}
+
+// Rescue Story model
+model RescueStory {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String   @db.Text
+  excerpt       String?
+  location      String
+  rescueDate    DateTime?
+  adoptionDate  DateTime?
+  rescueTeam    String?
+  medicalCost   Decimal? @db.Decimal(10, 2)
+
+  // Images
+  beforeImage   String?
+  afterImage    String?
+  featuredImage String?
+
+  // Status
+  status        ContentStatus @default(DRAFT)
+  featured      Boolean       @default(false)
+  views         Int           @default(0)
+
+  // SEO
+  metaTitle     String?
+  metaDescription String?
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  publishedAt   DateTime?
+
+  // Relations
+  authorId      String?
+  author        User?    @relation(fields: [authorId], references: [id])
+
+  @@map("rescue_stories")
+}
+
+// Site Settings model
+model SiteSetting {
+  id          String @id @default(cuid())
+  key         String @unique
+  value       String @db.Text
+  type        SettingType @default(TEXT)
+  category    String @default("general")
+  description String?
+  isPublic    Boolean @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings_key_value")
+}
+
+// Media Library model
+model Media {
+  id          String    @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  url         String
+  alt         String?
+  caption     String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+
+  @@map("media")
+}
+
+// Newsletter Subscription model
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  isActive  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletters")
+}
+
+// CMS Models
+model SiteSettings {
+  id                String   @id @default("default")
+  siteName          String   @default("Save Paws")
+  siteDescription   String   @default("Saving Lives, One Rescue at a Time")
+  heroTitle         String   @default("Saving Lives, One Rescue at a Time")
+  heroSubtitle      String   @default("Join our global mission to rescue, rehabilitate, and rehome abandoned dogs.")
+  heroImage         String?
+  logoUrl           String?
+  faviconUrl        String?
+  contactEmail      String   @default("help@globaldogrescue.org")
+  contactPhone      String   @default("+1 (555) 123-DOGS")
+  contactAddress    String   @default("Austin, TX, USA")
+  socialFacebook    String?
+  socialTwitter     String?
+  socialInstagram   String?
+  socialYoutube     String?
+  footerText        String   @default("Save Paws - Making a difference worldwide")
+  metaTitle         String   @default("Save Paws - Saving Lives Worldwide")
+  metaDescription   String   @default("Join our global mission to rescue, rehabilitate, and rehome abandoned dogs.")
+  metaKeywords      String?
+  googleAnalyticsId String?
+  facebookPixelId   String?
+  customCss         String?
+  customJs          String?
+  maintenanceMode   Boolean  @default(false)
+  maintenanceMessage String?
+  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now())
+
+  @@map("site_settings")
+}
+
+model Page {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  content         String
+  excerpt         String?
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  isPublished     Boolean   @default(false)
+  publishedAt     DateTime?
+  authorId        String
+  author          User      @relation(fields: [authorId], references: [id])
+  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+
+  @@map("pages")
+}
+
+model Post {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  content         String
+  excerpt         String?
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  isPublished     Boolean   @default(false)
+  publishedAt     DateTime?
+  isFeatured      Boolean   @default(false)
+  viewCount       Int       @default(0)
+  authorId        String
+  author          User      @relation(fields: [authorId], references: [id])
+  categoryId      String?
+  category        Category? @relation(fields: [categoryId], references: [id])
+  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+
+  @@map("posts")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String?
+  posts       Post[]
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@map("categories")
+}
+
+model Statistics {
+  id               String   @id @default("default")
+  dogsRescued      Int      @default(0)
+  dogsAdopted      Int      @default(0)
+  countriesServed  Int      @default(0)
+  volunteersActive Int      @default(0)
+  sheltersPartner  Int      @default(0)
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
+
+  @@map("statistics")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  MODERATOR
+  DONOR
+  VOLUNTEER
+}
+
+enum DonationType {
+  ONE_TIME
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum DonationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  STRIPE
+  PAYPAL
+  BANK_TRANSFER
+  OTHER
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SettingType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  JSON
+  IMAGE
+}
