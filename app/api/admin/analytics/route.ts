@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
           message: `New donation received: $${d.amount} from ${d.donorFirstName && d.donorLastName ? `${d.donorFirstName} ${d.donorLastName}` : d.donorEmail.split('@')[0]}`,
           timestamp: d.createdAt.toISOString(),
         })),
-        paymentMethods: paymentMethodStats.map(stat => ({
+        paymentMethods: paymentMethodStats.map((stat: any) => ({
           method: stat.paymentMethod,
           percentage: Math.round((stat._count.paymentMethod / totalDonations._count.id) * 100),
           amount: Number(stat._sum.amount || 0),
