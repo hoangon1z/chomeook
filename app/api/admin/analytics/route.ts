@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
           monthlyGrowth: 12, // This would be calculated from historical data
           newVolunteers: 89, // This would come from user registrations
         },
-        recentActivity: recentDonations.map(d => ({
+        recentActivity: recentDonations.map((d: any) => ({
           type: "donation",
           message: `New donation received: $${d.amount} from ${d.donorFirstName && d.donorLastName ? `${d.donorFirstName} ${d.donorLastName}` : d.donorEmail.split('@')[0]}`,
           timestamp: d.createdAt.toISOString(),
